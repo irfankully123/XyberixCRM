@@ -1,20 +1,30 @@
 import DashboardLayout from "@/Layouts/DashboardLayout.jsx";
-import {Head, router} from "@inertiajs/react";
+import {Head} from "@inertiajs/react";
 import Modal from "@/Components/Modal.jsx";
 import {useEffect, useState} from "react";
 import '../../table.css'
 import axios from "axios";
 
-const TaskIndex = ({tasks}) => {
+const TaskIndex = () => {
 
     const [modal, setModal] = useState(false);
 
     const [perPage, setPage] = useState("10");
 
+    const [tasks, setTasks] = useState({});
 
-
-    useEffect( () => {
-        console.log(perPage);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(route('tasks.fetch', {perPage}));
+                if (response.status === 200) {
+                    return response.data.tasks;
+                }
+            } catch (error) {
+                console.error('Fetch failed:', error);
+            }
+        };
+        fetchData().then(tasks => setTasks(tasks));
     }, [perPage]);
 
 
