@@ -1,0 +1,52 @@
+.layout-navbar .navbar-dropdown .badge-notifications {
+    padding: 0.2rem 0.4rem;
+    top: 0.5rem;
+}
+
+.badge.badge-notifications:not(.badge-dot) {
+    font-size: .582rem;
+    line-height: .75rem;
+    padding: 0.05rem 0.2rem;
+}
+
+.badge.badge-notifications {
+    display: inline-block;
+    margin: 0;
+    position: absolute;
+    top: auto;
+    -webkit-transform: translate(-50%,-30%);
+    transform: translate(-50%,-30%);
+}
+
+.rounded-pill {
+    border-radius: 50rem!important;
+}
+
+.bg-danger {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-danger-rgb),var(--bs-bg-opacity))!important;
+}
+
+.badge {
+    line-height: .75;
+    text-transform: uppercase;
+}
+
+.badge {
+    --bs-badge-padding-x: 0.593em;
+    --bs-badge-padding-y: 0.52em;
+    --bs-badge-font-size: 0.8125em;
+    --bs-badge-font-weight: 500;
+    --bs-badge-color: #fff;
+    --bs-badge-border-radius: 0.25rem;
+    border-radius: var(--bs-badge-border-radius);
+    color: var(--bs-badge-color);
+    display: inline-block;
+    font-size: var(--bs-badge-font-size);
+    font-weight: var(--bs-badge-font-weight);
+    line-height: 1;
+    padding: var(--bs-badge-padding-y) var(--bs-badge-padding-x);
+    text-align: center;
+    vertical-align: baseline;
+    white-space: nowrap;
+}
