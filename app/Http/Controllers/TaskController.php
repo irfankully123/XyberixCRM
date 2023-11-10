@@ -20,6 +20,10 @@ class TaskController extends Controller
     {
         return response()->json([
             'tasks' => Task::query()
+                ->when($request->input('search'), function ($query, $search) {
+                    $query->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                })
                 ->orderBy('id', 'desc')
                 ->paginate($request->input('perPage'))
                 ->withQueryString()

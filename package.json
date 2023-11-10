@@ -19,6 +19,8 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@tanstack/react-query": "^5.8.1",
+        "@tanstack/react-query-devtools": "^5.8.1",
         "chart.js": "^4.4.0",
         "idlejs": "^3.0.0",
         "laravel-echo": "^1.15.3",

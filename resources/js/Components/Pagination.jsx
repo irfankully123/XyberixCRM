@@ -1,46 +1,46 @@
-import {Link} from "@inertiajs/react";
 
-const Pagination = ({links, firstPageUrl, lastPageUrl, lastPageCheck}) => {
-    const checkingPageCount = lastPageCheck > 1;
+const Pagination = ({ pagelinks = [], activeLink, last_page, moveToLastPage, moveToFirstPage, moveToNextPage, moveToPrePage }) => {
+
+    const links = pagelinks.map((link, index) => {
+        if (link.label === '&laquo; Previous' || link.label === 'Next &raquo;') {
+            return null;
+        }
+        return (
+            <li key={index} className={link.active ? 'page-item active' : 'page-item'}>
+                <button type="button" onClick={() => activeLink(parseInt(link.label, 10))} className="page-link">
+                    {link.label}
+                </button>
+            </li>
+        );
+    });
+
     return (
-        <div className="row">
-            <div className="col d-flex justify-content-center">
-                <div className="demo-inline-spacing">
-                    <nav aria-label="Page navigation">
-                        <ul className="pagination">
-                            {checkingPageCount && (
+        <>
+            <div className="row">
+                <div className="col d-flex justify-content-center">
+                    <div className="demo-inline-spacing">
+                        <nav aria-label="Page navigation">
+                            <ul className="pagination">
                                 <li className="page-item first">
-                                    <a className="page-link" href={firstPageUrl}>
-                                        <i className="tf-icon bx bx-chevrons-left"></i>
-                                    </a>
+                                    <button onClick={() => moveToFirstPage()} className="page-link" ><i className="tf-icon bx bx-chevrons-left"></i></button>
                                 </li>
-                            )}
-                            {links.map((link, index) => (
-                                <li
-                                    key={index}
-                                    className={`page-item ${link.active ? 'active' : ''}`}
-                                >
-                                    {link.url !== null ? (
-                                        <Link className="page-link" href={link.url}
-                                           dangerouslySetInnerHTML={{__html: link.label}}></Link>
-                                    ) : (
-                                        <span className="page-link"
-                                              dangerouslySetInnerHTML={{__html: link.label}}></span>
-                                    )}
+                                <li>
+                                    <button onClick={() => moveToPrePage()} className="page-link" >Previous</button>
                                 </li>
-                            ))}
-                            {checkingPageCount && (
+                                {links}
+                                <li>
+                                    <button onClick={() => moveToNextPage()} className="page-link" >Next</button>
+                                </li>
                                 <li className="page-item last">
-                                    <a className="page-link" href={lastPageUrl}>
-                                        <i className="tf-icon bx bx-chevrons-right"></i>
-                                    </a>
+                                    <button onClick={() => moveToLastPage(last_page)} className="page-link" ><i className="tf-icon bx bx-chevrons-right"></i></button>
                                 </li>
-                            )}
-                        </ul>
-                    </nav>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        </>
+    );
+
 }
-export default Pagination
+export default Pagination;

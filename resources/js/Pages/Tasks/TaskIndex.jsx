@@ -1,31 +1,43 @@
 import DashboardLayout from "@/Layouts/DashboardLayout.jsx";
 import {Head} from "@inertiajs/react";
 import Modal from "@/Components/Modal.jsx";
-import {useEffect, useState} from "react";
+import {useReducer, useState} from "react";
+import Pagination from "@/Components/Pagination.jsx";
+import paginationReducer from "@/Reducer/paginationReducer.js";
+import TaskService from "@/Services/TaskService.js";
 import '../../table.css'
-import axios from "axios";
 
 const TaskIndex = () => {
 
     const [modal, setModal] = useState(false);
 
-    const [perPage, setPage] = useState("10");
+    const [search, setSearch] = useState("")
 
-    const [tasks, setTasks] = useState({});
+    const [perPage, setPage] = useState("5");
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(route('tasks.fetch', {perPage}));
-                if (response.status === 200) {
-                    return response.data.tasks;
-                }
-            } catch (error) {
-                console.error('Fetch failed:', error);
-            }
-        };
-        fetchData().then(tasks => setTasks(tasks));
-    }, [perPage]);
+    const [paginationState, dispatchPagination] = useReducer(paginationReducer, { activePage: 1 });
+
+    const { data, isLoading, isError } = TaskService.fetchTasks({
+        search,
+        perPage,
+        page: paginationState.activePage,
+    });
+
+
+
+    const handlePrePage = () => {
+        if (paginationState.activePage > 1) {
+            dispatchPagination({ type: 'PrevPage' });
+        }
+    };
+
+    const handleNextPage = () => {
+        if (data && paginationState.activePage < data.tasks.last_page) {
+            dispatchPagination({ type: 'NextPage' });
+        }
+    };
+
+    const handleSetPage = (page) => dispatchPagination({ type: 'SetPage', page });
 
 
     return (
@@ -76,17 +88,19 @@ const TaskIndex = () => {
                                          className="dataTables_length" id="DataTables_Table_0_length"><label><select
                                         name="DataTables_Table_0_length" aria-controls="DataTables_Table_0"
                                         className="form-select">
+                                        <option value="5">5</option>
                                         <option value="10">10</option>
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
+                                        <option value="15">15</option>
+                                        <option value="20">20</option>
                                     </select></label></div>
                                 </div>
                             </div>
                             <div className="col-md-10">
                                 <div
                                     className="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0">
-                                    <div id="DataTables_Table_0_filter" className="dataTables_filter"><label><input
+                                    <div id="DataTables_Table_0_filter" className="dataTables_filter"><label>
+                                        <input
+                                            onChange={(e)=>setSearch(e.target.value)}
                                         type="search" className="form-control mx-3" placeholder="Search.."
                                         aria-controls="DataTables_Table_0"/></label></div>
                                     <div className="dt-buttons">
@@ -115,7 +129,7 @@ const TaskIndex = () => {
                             </thead>
                             <tbody>
                             {
-                                tasks.data && tasks.data.map((task, index) => (
+                                data && data.tasks.data.map((task, index) => (
                                     <tr key={index} className="odd">
                                         <td className="  control" tabIndex="0" style={{display: "none"}}></td>
                                         <td className="sorting_1">
@@ -158,46 +172,15 @@ const TaskIndex = () => {
                                 </div>
                             </div>
                             <div className="col-sm-12 col-md-6">
-                                <div className="dataTables_paginate paging_simple_numbers"
-                                     id="DataTables_Table_0_paginate">
-                                    <ul className="pagination">
-                                        <li className="paginate_button page-item previous disabled"
-                                            id="DataTables_Table_0_previous"><a aria-controls="DataTables_Table_0"
-                                                                                aria-disabled="true" role="link"
-                                                                                data-dt-idx="previous" tabIndex="0"
-                                                                                className="page-link">Previous</a></li>
-                                        <li className="paginate_button page-item active"><a href="#"
-                                                                                            aria-controls="DataTables_Table_0"
-                                                                                            role="link"
-                                                                                            aria-current="page"
-                                                                                            data-dt-idx="0" tabIndex="0"
-                                                                                            className="page-link">1</a>
-                                        </li>
-                                        <li className="paginate_button page-item "><a href="#"
-                                                                                      aria-controls="DataTables_Table_0"
-                                                                                      role="link" data-dt-idx="1"
-                                                                                      tabIndex="0"
-                                                                                      className="page-link">2</a></li>
-                                        <li className="paginate_button page-item "><a href="#"
-                                                                                      aria-controls="DataTables_Table_0"
-                                                                                      role="link" data-dt-idx="2"
-                                                                                      tabIndex="0"
-                                                                                      className="page-link">3</a></li>
-                                        <li className="paginate_button page-item "><a href="#"
-                                                                                      aria-controls="DataTables_Table_0"
-                                                                                      role="link" data-dt-idx="3"
-                                                                                      tabIndex="0"
-                                                                                      className="page-link">4</a></li>
-                                        <li className="paginate_button page-item "><a href="#"
-                                                                                      aria-controls="DataTables_Table_0"
-                                                                                      role="link" data-dt-idx="4"
-                                                                                      tabIndex="0"
-                                                                                      className="page-link">5</a></li>
-                                        <li className="paginate_button page-item next" id="DataTables_Table_0_next"><a
-                                            href="#" aria-controls="DataTables_Table_0" role="link" data-dt-idx="next"
-                                            tabIndex="0" className="page-link">Next</a></li>
-                                    </ul>
-                                </div>
+                                <Pagination
+                                    pagelinks={data && data.tasks.links}
+                                    activeLink={(page) => handleSetPage(page)}
+                                    last_page={data && data.tasks.last_page}
+                                    moveToLastPage={(lastPage) => handleSetPage(lastPage)}
+                                    moveToFirstPage={() => handleSetPage(1)}
+                                    moveToPrePage={handlePrePage}
+                                    moveToNextPage={handleNextPage}
+                                />
                             </div>
                         </div>
                     </div>
